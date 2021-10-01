@@ -1,0 +1,22 @@
+/* =============== RESET ================ */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* ============= TYPOGRAPHY ============== */
+
+/* =============== LAYOUT ================ */
+.calc-display-input {
+    background-color: black;
+    color: white;
+    width: 200px;
+    height: 70px;
+}
+
+.calc-display-output {
+    background-color: black;
+    color: white;
+    width: 200px;
+    height: 70px;
+}
