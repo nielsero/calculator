@@ -15,8 +15,8 @@ calcButtons.forEach(function(button) {
 function handleButtonClick(e) {
     let dataKey = this.getAttribute('data-key');
 
-    // checks if user clicked a digit
-    if(!isNaN(dataKey)) {
+    // checks if user clicked a digit or dot
+    if(!isNaN(dataKey) || dataKey === '.') {
         handleButtonClickDigit(dataKey);
     } else if(dataKey === '+'|| dataKey === '-' || dataKey === '*' || dataKey === '/') {
         handleButtonClickOperator(dataKey);
@@ -24,9 +24,12 @@ function handleButtonClick(e) {
         handleButtonClickEquals();
     } else if(dataKey === 'clr') {
         handleButtonClickClear();
+    } else if(dataKey === 'del') {
+        handleButtonClickDelete();
     }
 }
 
+// handles digit or dot
 function handleButtonClickDigit(dataKey) {
     if(operator === '') {
         if(a === result) {
@@ -46,7 +49,7 @@ function handleButtonClickDigit(dataKey) {
 function handleButtonClickOperator(dataKey) {
     if(operator === '') {
         // checks if first input is not empty
-        if(a != '') {
+        if(a != '' || a === 0) {
             operator = dataKey;
             displayTextIn += dataKey;
             updateDisplay(calcDisplayIn, displayTextIn);
@@ -80,6 +83,21 @@ function handleButtonClickClear() {
     updateDisplay(calcDisplayOut, displayTextOut);
 }
 
+function handleButtonClickDelete() {
+    let prevChar = displayTextIn.charAt(displayTextIn.length - 1);
+
+    if(prevChar === '+'|| prevChar === '-' || prevChar === '*' || prevChar === '/') {
+        operator = '';
+    } else if(b === '') {
+        a = a.slice(0, a.length - 1); // removes last element
+    } else if(b != '') {
+        b = b.slice(0, b.length - 1);
+    }
+
+    displayTextIn = displayTextIn.slice(0, displayTextIn.length - 1);
+    updateDisplay(calcDisplayIn, displayTextIn);
+}
+
 function pickOperation(operator) {
     switch(operator) {
         case '+': return add;
@@ -94,24 +112,31 @@ function updateDisplay(display, text) {
 }
 
 function prepareNextCalculation() {
+    if(isNaN(result)) {
+        result = 0;
+    }
     a = result;
     b = '';
 }
 /* ==================== LOGIC FUNCTIONS ========================= */
 function add(a,b) {
-    return a+b;
+    return parseFloat((a+b).toFixed(2));
 }
 
 function subtract(a,b) {
-    return a-b;
+    return parseFloat((a-b).toFixed(2));
 }
 
 function multiply(a,b) {
-    return a*b;
+    return parseFloat((a*b).toFixed(2));
 }
 
 function divide(a,b) {
-    return a/b;
+    if(b!=0) {
+        return parseFloat((a/b).toFixed(2)); // to round it
+    } else {
+        return "STOP dividing by 0";
+    }
 }
 
 function operate(a,b,operation) {

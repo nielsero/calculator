@@ -95,6 +95,14 @@ header {
     opacity: .7;
 }
 
+.special-btn {
+    background-color: aqua;
+}
+
+.equals-btn {
+    background-color: #ff5058;
+}
+
 footer { 
     display: flex;
     justify-content: center;
