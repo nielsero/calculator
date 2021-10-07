@@ -6,6 +6,7 @@ const calcButtons = document.querySelectorAll('.btn');
 let displayTextIn = displayTextOut = '';
 let a = b = operator = ''; // arguments for the operate function
 let result;
+let aHasDot = false, bHasDot = false; // to only allow one dot
 
 calcButtons.forEach(function(button) {
     button.addEventListener('click', handleButtonClick);
@@ -16,7 +17,7 @@ function handleButtonClick(e) {
     let dataKey = this.getAttribute('data-key');
 
     // checks if user clicked a digit or dot
-    if(!isNaN(dataKey) || dataKey === '.') {
+    if(!isNaN(dataKey)) {
         handleButtonClickDigit(dataKey);
     } else if(dataKey === '+'|| dataKey === '-' || dataKey === '*' || dataKey === '/') {
         handleButtonClickOperator(dataKey);
@@ -26,10 +27,12 @@ function handleButtonClick(e) {
         handleButtonClickClear();
     } else if(dataKey === 'del') {
         handleButtonClickDelete();
+    } else if(dataKey === '.') {
+        handleButtonClickDot(dataKey);
     }
 }
 
-// handles digit or dot
+// handles digit
 function handleButtonClickDigit(dataKey) {
     if(operator === '') {
         if(a === result) {
@@ -61,6 +64,7 @@ function handleButtonClickOperator(dataKey) {
             updateDisplay(calcDisplayOut, result);
             prepareNextCalculation();
             operator = dataKey;
+            displayTextIn = result; // to not make input display super long
             displayTextIn += dataKey;
             updateDisplay(calcDisplayIn, displayTextIn);
         }
@@ -70,6 +74,7 @@ function handleButtonClickOperator(dataKey) {
 function handleButtonClickEquals() {
     if(b != '') {
         result = operate(Number(a), Number(b), pickOperation(operator));
+        displayTextIn = result;
         updateDisplay(calcDisplayOut, result);
         operator = '';
         prepareNextCalculation();
@@ -79,6 +84,7 @@ function handleButtonClickEquals() {
 // to set it back to initial conditions
 function handleButtonClickClear() {
     a = b = operator = displayTextIn = displayTextOut = '';
+    aHasDot = bHasDot = false;
     updateDisplay(calcDisplayIn, displayTextIn);
     updateDisplay(calcDisplayOut, displayTextOut);
 }
@@ -90,12 +96,36 @@ function handleButtonClickDelete() {
         operator = '';
     } else if(b === '') {
         a = a.slice(0, a.length - 1); // removes last element
+        if(prevChar === '.') {
+            aHasDot = false;
+        }
     } else if(b != '') {
         b = b.slice(0, b.length - 1);
+        if(prevChar === '.') {
+            bHasDot = false;
+        }
     }
 
     displayTextIn = displayTextIn.slice(0, displayTextIn.length - 1);
     updateDisplay(calcDisplayIn, displayTextIn);
+}
+
+function handleButtonClickDot(dataKey) {
+    if(operator === '' && !aHasDot) {
+        if(a === result) {
+            displayTextIn = '';
+            a = '';
+        }
+        a += dataKey;
+        displayTextIn += dataKey;
+        updateDisplay(calcDisplayIn, displayTextIn);
+        aHasDot = true;
+    } else if(operator != '' && !bHasDot) {
+        b += dataKey;
+        displayTextIn += dataKey;
+        updateDisplay(calcDisplayIn, displayTextIn);
+        bHasDot = true;
+    } 
 }
 
 function pickOperation(operator) {
@@ -117,6 +147,7 @@ function prepareNextCalculation() {
     }
     a = result;
     b = '';
+    bHasDot = false;
 }
 /* ==================== LOGIC FUNCTIONS ========================= */
 function add(a,b) {
